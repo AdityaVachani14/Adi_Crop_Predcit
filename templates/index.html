@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🌱 Smart Crop Predictor</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeInPage 1s ease-in-out;
+    }
+
+    @keyframes fadeInPage {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      color: #2e7d32;
+      font-size: 2.8rem;
+      margin: 40px 0 20px;
+      text-shadow: 1px 1px #c8e6c9;
+      animation: bounceIn 1.2s ease-out;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      60% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    form {
+      background-color: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+      animation: formSlideIn 1s ease;
+    }
+
+    @keyframes formSlideIn {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    label {
+      margin-top: 15px;
+      display: block;
+      font-weight: 600;
+      color: #388e3c;
+      transition: color 0.3s ease;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 6px;
+      border: 1px solid #bdbdbd;
+      font-size: 1rem;
+      transition: border 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #66bb6a;
+      box-shadow: 0 0 5px rgba(102, 187, 106, 0.5);
+      outline: none;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      background-color: #4caf50;
+      color: white;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #388e3c;
+      transform: scale(1.02);
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #f1f8e9;
+      border: 2px solid #aed581;
+      color: #33691e;
+      font-size: 1.3rem;
+      font-weight: bold;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      display: none;
+      animation: showResult 0.5s ease-in-out forwards;
+    }
+
+    @keyframes showResult {
+      from { opacity: 0; transform: translateY(15px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .footer {
+      margin: 40px 0;
+      font-size: 0.9rem;
+      color: #607d8b;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌾 Smart Crop Predictor</h1>
+
+  <form id="predict-form" method="post" action="/predict">
+    <label for="N">Nitrogen (N):</label>
+    <input type="number" name="N" required step="any">
+
+    <label for="P">Phosphorous (P):</label>
+    <input type="number" name="P" required step="any">
+
+    <label for="K">Potassium (K):</label>
+    <input type="number" name="K" required step="any">
+
+    <label for="temperature">Temperature (°C):</label>
+    <input type="number" name="temperature" required step="any">
+
+    <label for="humidity">Humidity (%):</label>
+    <input type="number" name="humidity" required step="any">
+
+    <label for="ph">Soil pH Level:</label>
+    <input type="number" name="ph" required step="any">
+
+    <label for="rainfall">Rainfall (mm):</label>
+    <input type="number" name="rainfall" required step="any">
+
+    <button type="submit">🌿 Predict Crop</button>
+  </form>
+
+  <div class="result" id="result"></div>
+
+  <div class="footer">Built with ❤️ for smart agriculture innovation</div>
+
+  <script>
+    const form = document.getElementById('predict-form');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const formData = new FormData(form);
+      const response = await fetch('/predict', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (data.predicted_crop) {
+        resultDiv.innerHTML = `🌱 Recommended Crop: <strong>${data.predicted_crop}</strong>`;
+        resultDiv.style.display = 'block';
+        resultDiv.style.animation = 'showResult 0.5s ease-in-out forwards';
+      } else {
+        resultDiv.innerHTML = "❌ Error: " + data.error;
+        resultDiv.style.display = 'block';
+      }
+    });
+  </script>
+
+</body>
+</html>
